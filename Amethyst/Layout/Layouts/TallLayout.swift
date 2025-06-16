@@ -20,7 +20,7 @@ class TallLayout<Window: WindowType>: Layout<Window>, PanedLayout {
     override var layoutDescription: String { return "" }
 
     private(set) var mainPaneCount: Int = 1
-    private(set) var mainPaneRatio: CGFloat = 0.5
+    private(set) var mainPaneRatio: CGFloat = 0.618
 
     required init() {
         super.init()
