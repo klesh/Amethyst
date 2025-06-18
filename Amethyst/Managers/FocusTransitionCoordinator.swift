@@ -30,6 +30,7 @@ protocol FocusTransitionTarget: AnyObject {
     func nextWindowIDCounterClockwise(on screen: Screen) -> Window.WindowID?
     func nextScreenIndexClockwise(from screen: Screen) -> Int
     func nextScreenIndexCounterClockwise(from screen: Screen) -> Int
+    func screenFromCursor() -> Screen?
 }
 
 class FocusTransitionCoordinator<Target: FocusTransitionTarget> {
@@ -37,6 +38,7 @@ class FocusTransitionCoordinator<Target: FocusTransitionTarget> {
     typealias Screen = Window.Screen
 
     weak var target: Target?
+//    var focusedScreenIndex: Int?
 
     private let userConfiguration: UserConfiguration
     private let focusFollowsMouseManager: FocusFollowsMouseManager<FocusTransitionCoordinator<Target>>
@@ -130,9 +132,10 @@ class FocusTransitionCoordinator<Target: FocusTransitionTarget> {
         }
 
         // Do nothing if the screen is already focused
-        if let focusedWindow = Window.currentlyFocused(), let focusedScreen = focusedWindow.screen(), focusedScreen == screen {
-            return
-        }
+//        if focusedScreenIndex == screenIndex {
+//            return
+//        }
+//        focusedScreenIndex = screenIndex
 
         // If the previous focus has been tracked, then focus the window that had the focus before.
         if let previouslyFocused = target?.lastFocusedWindow(on: screen), previouslyFocused.isOnScreen() {
@@ -163,10 +166,9 @@ class FocusTransitionCoordinator<Target: FocusTransitionTarget> {
     }
 
     func moveFocusScreenCounterClockwise() {
-        guard let focusedScreen = Window.currentlyFocused()?.screen() else {
+        guard let focusedScreen = target?.screenFromCursor() else {
             return
         }
-
         guard let nextScreenIndex = target?.nextScreenIndexCounterClockwise(from: focusedScreen) else {
             return
         }
@@ -175,20 +177,20 @@ class FocusTransitionCoordinator<Target: FocusTransitionTarget> {
     }
 
     func moveFocusScreenClockwise() {
-        guard let focusedScreen = Window.currentlyFocused()?.screen() else {
+        guard let focusedScreen = target?.screenFromCursor() else {
             return
         }
 
         guard let screenIndex = target?.nextScreenIndexClockwise(from: focusedScreen) else {
             return
         }
-
         focusScreen(at: screenIndex)
     }
 
     func recentlyTriggeredFocusFollowsMouse() -> Bool {
         return focusFollowsMouseManager.recentlyTriggeredFocusFollowsMouse()
     }
+
 }
 
 extension FocusTransitionCoordinator: FocusFollowsMouseManagerDelegate {

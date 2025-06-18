@@ -12,6 +12,7 @@ import Foundation
 import RxSwift
 import Silica
 import SwiftyJSON
+import Cocoa
 
 /**
  The tolerant interval between the click and the application of a mouse move from focus.
@@ -690,6 +691,16 @@ extension WindowManager {
 
     func screenManagerIndex(for screen: Screen) -> Int? {
         return screens.screenManagers.firstIndex { $0.screen?.screenID() == screen.screenID() }
+    }
+
+    func screenFromCursor() -> Screen? {
+        let mouseLocation = NSEvent.mouseLocation
+        for scm in screens.screenManagers {
+            if scm.screen?.frame().contains(mouseLocation) ?? false {
+                return scm.screen
+            }
+        }
+        return nil
     }
 }
 
