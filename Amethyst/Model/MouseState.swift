@@ -28,7 +28,7 @@ enum MouseState<Window: WindowType> {
 protocol MouseStateKeeperDelegate: AnyObject {
     associatedtype Window: WindowType
     func recommendMainPaneRatio(_ ratio: CGFloat)
-    func swapDraggedWindowWithDropzone(_ draggedWindow: Window)
+    func swapDraggedWindowWithDropzone(_ draggedWindow: Window) -> Bool
 }
 
 /**
@@ -119,7 +119,7 @@ class MouseStateKeeper<Delegate: MouseStateKeeperDelegate> {
     }
 
     // Execute an action that was initiated by the observer and completed by the state keeper
-    func swapDraggedWindowWithDropzone(_ draggedWindow: Delegate.Window) {
-        delegate?.swapDraggedWindowWithDropzone(draggedWindow)
+    func swapDraggedWindowWithDropzone(_ draggedWindow: Delegate.Window) -> Bool {
+        return delegate?.swapDraggedWindowWithDropzone(draggedWindow) ?? false
     }
 }

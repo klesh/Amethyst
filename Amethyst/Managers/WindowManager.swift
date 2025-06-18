@@ -529,8 +529,8 @@ extension WindowManager: MouseStateKeeperDelegate {
         }
     }
 
-    func swapDraggedWindowWithDropzone(_ draggedWindow: Window) {
-        guard let screen = draggedWindow.screen() else { return }
+    func swapDraggedWindowWithDropzone(_ draggedWindow: Window) -> Bool {
+        guard let screen = draggedWindow.screen() else { return false }
 
         let windows: [Window] = self.windows.windows(onScreen: screen)
 
@@ -543,15 +543,16 @@ extension WindowManager: MouseStateKeeperDelegate {
             let windowSet = self.windows.windowSet(forWindowsOnScreen: screen)
             if let layoutWindow = layout.windowAtPoint(pointerLocation, of: windowSet, on: screen), let framedWindow = self.windows.window(withID: layoutWindow.id) {
                 executeTransition(.switchWindows(draggedWindow, framedWindow))
-                return
+                return false
             }
         }
 
         // Ignore if there is no window at that point
         guard let secondWindow = WindowsInformation.alternateWindowForScreenAtPoint(pointerLocation, withWindows: windows, butNot: draggedWindow) else {
-            return
+            return false
         }
         executeTransition(.switchWindows(draggedWindow, secondWindow))
+        return true
     }
 }
 
@@ -591,6 +592,7 @@ extension WindowManager: ApplicationObservationDelegate {
         }
 
         guard let screen = window.screen(), activeWindows(on: screen).contains(window) else {
+            log.debug("screen does not contain the window")
             return
         }
 
@@ -602,14 +604,17 @@ extension WindowManager: ApplicationObservationDelegate {
 
             // record window and wait for mouse up
             mouseStateKeeper.state = .moving(window: window)
-        case let .doneDragging(lmbUpMoment):
+//        case let .doneDragging(lmbUpMoment):
+        case .doneDragging:
             mouseStateKeeper.state = .pointing // flip state first to prevent race condition
 
             // if mouse button recently came up, assume window move is related
-            let dragEndInterval = Date().timeIntervalSince(lmbUpMoment)
-            guard dragEndInterval < mouseStateKeeper.dragRaceThresholdSeconds else { break }
-
-            mouseStateKeeper.swapDraggedWindowWithDropzone(window)
+//            let dragEndInterval = Date().timeIntervalSince(lmbUpMoment)
+//            guard dragEndInterval < mouseStateKeeper.dragRaceThresholdSeconds else { break }
+            if !mouseStateKeeper.swapDraggedWindowWithDropzone(window) {
+                log.info("fallback to activation routine")
+                markScreen(screen, forReflowWithChange: .applicationActivate)
+            }
         default:
             break
         }
