@@ -88,12 +88,16 @@ class ApplicationEventHandler {
     private func processEvent(_ event: Event) -> OSStatus {
         do {
             let pid = try event.pid()
-            switch event.eventType {
-            case .applicationLaunched:
-                delegate?.add(applicationWithPID: pid)
-            case .applicationTerminated:
-                delegate?.remove(applicationWithPID: pid)
-            }
+            let dele = self.delegate
+            DispatchQueue.main.asyncAfter (deadline: .now()+0.4, execute: {
+                switch event.eventType {
+                case .applicationLaunched:
+                    dele?.add(applicationWithPID: pid)
+                case .applicationTerminated:
+                    dele?.remove(applicationWithPID: pid)
+                }
+            })
+
         } catch {
             log.error(error)
             return OSStatus(eventNotHandledErr)

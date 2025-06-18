@@ -224,9 +224,9 @@ struct ApplicationObservation<Delegate: ApplicationObservationDelegate> {
                 return
             }
 
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
                 self.handle(notification: notification, window: window)
-            }
+            })
         }
 
         guard success else {
