@@ -253,6 +253,8 @@ final class ScreenManager<Delegate: ScreenManagerDelegate>: NSObject, Codable {
                 if mouseFollowsFocus {
                     if case .windowSwap(let window, _) = event {
                         window.focus()
+                    } else if case .focusChanged(let window) = event {
+                        window.focus()
                     }
                 }
 

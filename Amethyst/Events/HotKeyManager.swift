@@ -187,6 +187,14 @@ class HotKeyManager<Application: ApplicationType>: NSObject {
             windowManager.windowTransitionCoordinator.swapFocusedWindowClockwise()
         }
 
+        constructCommandWithCommandKey(CommandKey.rollCCW.rawValue) {
+            windowManager.windowTransitionCoordinator.rollWindowsCounterClockwise()
+        }
+
+        constructCommandWithCommandKey(CommandKey.rollCW.rawValue) {
+            windowManager.windowTransitionCoordinator.rollWindowsClockwise()
+        }
+
         constructCommandWithCommandKey(CommandKey.swapMain.rawValue) {
             windowManager.windowTransitionCoordinator.swapFocusedWindowToMain()
         }
@@ -380,6 +388,8 @@ class HotKeyManager<Application: ApplicationType>: NSObject {
         hotKeyNameToDefaultsKey.append(["Swap focused window to clockwise screen", CommandKey.swapScreenCW.rawValue])
         hotKeyNameToDefaultsKey.append(["Swap focused window counter clockwise", CommandKey.swapCCW.rawValue])
         hotKeyNameToDefaultsKey.append(["Swap focused window clockwise", CommandKey.swapCW.rawValue])
+        hotKeyNameToDefaultsKey.append(["Roll windows counter clockwise", CommandKey.rollCCW.rawValue])
+        hotKeyNameToDefaultsKey.append(["Roll windows clockwise", CommandKey.rollCW.rawValue])
         hotKeyNameToDefaultsKey.append(["Swap focused window with main window", CommandKey.swapMain.rawValue])
         hotKeyNameToDefaultsKey.append(["Force windows to be reevaluated", CommandKey.reevaluateWindows.rawValue])
         hotKeyNameToDefaultsKey.append(["Throw focused window to space left", CommandKey.throwSpaceLeft.rawValue])

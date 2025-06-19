@@ -121,6 +121,8 @@ enum CommandKey: String {
     case swapScreenCW = "swap-screen-cw"
     case swapCCW = "swap-ccw"
     case swapCW = "swap-cw"
+    case rollCCW = "roll-ccw"
+    case rollCW = "roll-cw"
     case swapMain = "swap-main"
     case throwSpacePrefix = "throw-space"
     case focusScreenPrefix = "focus-screen"

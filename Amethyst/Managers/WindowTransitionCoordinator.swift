@@ -16,6 +16,7 @@ enum WindowTransition<Window: WindowType> {
     case moveWindowToScreen(_ window: Window, screen: Screen)
     case moveWindowToSpaceAtIndex(_ window: Window, spaceIndex: Int, sourceSpaceIndex: Int)
     case resetFocus
+    case rollWindows(screen: Screen, ccw: Bool)
 }
 
 protocol WindowTransitionTarget: AnyObject {
@@ -57,12 +58,14 @@ class WindowTransitionCoordinator<Target: WindowTransitionTarget> {
 
         if focusedIndex == 0 {
             let lastMainWindow = target?.lastMainWindowForCurrentSpace() ?? windows[1]
+            log.debug("focusing main \(String(describing: focusedWindow.title())), swap it with \(String(describing: lastMainWindow.title()))")
             target?.executeTransition(.switchWindows(lastMainWindow, focusedWindow))
             return
         }
 
         if focusedIndex != 0 {
             // Swap focused window with main window if other window is focused
+            log.debug("focusing slave \(String(describing: focusedWindow.title())), swap it with \(String(describing: windows[0].title()))")
             target?.executeTransition(.switchWindows(focusedWindow, windows[0]))
         }
     }
@@ -103,6 +106,32 @@ class WindowTransitionCoordinator<Target: WindowTransitionTarget> {
         let windowToSwapWith = windows[(focusedWindowIndex + 1) % windows.count]
 
         target?.executeTransition(.switchWindows(focusedWindow, windowToSwapWith))
+    }
+
+    func rollWindowsCounterClockwise() {
+        guard let focusedWindow = Window.currentlyFocused(), target?.isWindowFloating(focusedWindow) == false else {
+            target?.executeTransition(.resetFocus)
+            return
+        }
+
+        guard let screen = focusedWindow.screen() else {
+            return
+        }
+
+        target?.executeTransition(.rollWindows(screen: screen, ccw: true))
+    }
+
+    func rollWindowsClockwise() {
+        guard let focusedWindow = Window.currentlyFocused(), target?.isWindowFloating(focusedWindow) == false else {
+            target?.executeTransition(.resetFocus)
+            return
+        }
+
+        guard let screen = focusedWindow.screen() else {
+            return
+        }
+
+        target?.executeTransition(.rollWindows(screen: screen, ccw: false))
     }
 
     func throwToScreenAtIndex(_ screenIndex: Int) {

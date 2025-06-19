@@ -719,6 +719,29 @@ extension WindowManager: WindowTransitionTarget {
             }
 
             markAllScreensForReflow(withChange: .windowSwap(window: window, otherWindow: otherWindow))
+        case let .rollWindows(screen, ccw):
+            let windows = activeWindows(on: screen)
+            var idx = 0
+            var start = 1
+            var end = windows.count - 1
+            var swapDelta = -1
+            var step = 1
+            var nextMainWindow = windows[start]
+            if !ccw {
+                idx = end
+                start = idx - 1
+                end = 0
+                swapDelta = 1
+                step = -1
+                nextMainWindow = windows[idx]
+            }
+            log.info("total windows: \(windows.count) start: \(start) end: \(end) delta: \(swapDelta) step: \(step) idx: \(idx)")
+            let tmp = windows[idx]
+            for index in stride(from: start, to: end, by: step) {
+                self.windows.swap(window: windows[index+swapDelta], withWindow: windows[index])
+            }
+            self.windows.swap(window: tmp, withWindow: windows[end])
+            markScreen(screen, forReflowWithChange: .focusChanged(window: nextMainWindow))
         case let .moveWindowToScreen(window, screen):
             let currentScreen = window.screen()
             window.moveScaled(to: screen)
@@ -726,7 +749,6 @@ extension WindowManager: WindowTransitionTarget {
                 markScreen(currentScreen, forReflowWithChange: .remove(window: window))
             }
             markScreen(screen, forReflowWithChange: .add(window: window))
-            window.focus()
         case let .moveWindowToSpaceAtIndex(window, spaceIndex, sourceSpaceIndex):
             guard
                 let screen = window.screen(),
