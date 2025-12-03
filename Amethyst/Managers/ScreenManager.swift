@@ -164,6 +164,8 @@ final class ScreenManager<Delegate: ScreenManagerDelegate>: NSObject, Codable {
             lastFocusedWindow = window
         case let .focusChanged(window):
             lastFocusedWindow = window
+        case let .rollFocusChanged(window):
+            lastFocusedWindow = window
         case let .remove(window):
             if lastFocusedWindow == window {
                 lastFocusedWindow = nil
@@ -253,7 +255,7 @@ final class ScreenManager<Delegate: ScreenManagerDelegate>: NSObject, Codable {
                 if mouseFollowsFocus {
                     if case .windowSwap(let window, _) = event {
                         window.focus()
-                    } else if case .focusChanged(let window) = event {
+                    } else if case .rollFocusChanged(let window) = event {
                         window.focus()
                     }
                 }

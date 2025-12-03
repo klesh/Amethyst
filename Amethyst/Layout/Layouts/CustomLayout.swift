@@ -338,6 +338,9 @@ class CustomLayout<Window: WindowType>: StatefulLayout<Window>, PanedLayout {
         case .focusChanged(window: let window):
             jsChange["change"] = "focus_changed"
             jsChange["windowID"] = idHash(forWindowID: window.id())
+        case .rollFocusChanged(window: let window):
+            jsChange["change"] = "roll_focus_changed"
+            jsChange["windowID"] = idHash(forWindowID: window.id())
         case .windowSwap(window: let window, otherWindow: let otherWindow):
             jsChange["change"] = "window_swap"
             jsChange["windowID"] = idHash(forWindowID: window.id())

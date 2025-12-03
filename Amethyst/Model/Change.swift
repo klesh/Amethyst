@@ -13,6 +13,7 @@ enum Change<Window: WindowType> {
     case remove(window: Window)
     case focusChanged(window: Window)
     case windowSwap(window: Window, otherWindow: Window)
+    case rollFocusChanged(window: Window)
     case applicationActivate
     case applicationDeactivate
     case spaceChange

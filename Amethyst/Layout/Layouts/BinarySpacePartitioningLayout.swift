@@ -234,6 +234,8 @@ class BinarySpacePartitioningLayout<Window: WindowType>: StatefulLayout<Window> 
             rootNode.removeWindowID(window.id())
         case let .focusChanged(window):
             lastKnownFocusedWindowID = window.id()
+        case let .rollFocusChanged(window):
+            lastKnownFocusedWindowID = window.id()
         case let .windowSwap(window, otherWindow):
             let windowID = window.id()
             let otherWindowID = otherWindow.id()
